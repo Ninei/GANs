@@ -7,11 +7,6 @@ To get a better understanding of how this all works, we’ll use a GAN to solve 
 Reference Project : https://github.com/AYLIEN/gan-intro
 
 Reference Blog : http://blog.aylien.com/introduction-generative-adversarial-networks-code-tensorflow/
-
-## Installing dependencies
-
-Written for Python `3.x`.
-Create Virtual Enviroment: https://docs.python.org/ko/3/tutorial/venv.html
     
 ## Training
 
