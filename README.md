@@ -10,8 +10,7 @@ Reference Blog : http://blog.aylien.com/introduction-generative-adversarial-netw
 
 ## Installing dependencies
 
-Written for Python `3.x`.
-Create Virtual Enviroment: https://docs.python.org/ko/3/tutorial/venv.html
+Written for Python `3.x` in Virtual Enviroment
     
 ## Training
 
