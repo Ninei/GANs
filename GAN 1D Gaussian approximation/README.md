@@ -12,8 +12,8 @@ Reference Blog : http://blog.aylien.com/introduction-generative-adversarial-netw
 
 To run without minibatch discrimination (and plot the resulting distributions):
 
-    $ python One_Dimensional_Gaussian.py
+    $ python ODG.py
 
 To run with minibatch discrimination (and plot the resulting distributions):
 
-    $ python One_Dimensional_Gaussian.py --minibatch
+    $ python ODG.py --minibatch
