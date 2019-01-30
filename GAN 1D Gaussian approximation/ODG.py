@@ -162,6 +162,8 @@ class GAN(object):
 def train(model, data, gen, params):
     anim_frames = []
 
+    # To train the model, we draw samples from the data distribution and the noise distribution,
+    #  and alternate between optimizing the parameters of the discriminator and the generator.
     with tf.Session() as session:
         tf.local_variables_initializer().run()
         tf.global_variables_initializer().run()
