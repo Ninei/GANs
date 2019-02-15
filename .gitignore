@@ -114,5 +114,5 @@ dmypy.json
 .pyre/
 
 # bin, dataset
-/bin
-/dataset
+bin/
+dataset/
