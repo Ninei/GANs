@@ -29,7 +29,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/workspace/Sogang/GANs"
+set -gx VIRTUAL_ENV "/Volumes/NineiDB/DB/Workspace/Sogang/GANs"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
