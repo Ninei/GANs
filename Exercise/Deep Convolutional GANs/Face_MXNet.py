@@ -12,6 +12,10 @@ from mxnet.gluon import nn, utils
 from mxnet import autograd
 import numpy as np
 
+print("######################################")
+print("### Start DCGANs~~!!")
+print("######################################")
+
 # Set tranning parameter
 epochs = 2 # Set low by default for tests, set higher when you actually run this code.
 batch_size = 64
