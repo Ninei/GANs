@@ -115,3 +115,4 @@ dmypy.json
 
 # bin, dataset
 dataset/
+Exercise/Deep Convolutional GANs/lfw_dataset/

@@ -16,65 +16,68 @@ print("######################################")
 print("### Start DCGANs~~!!")
 print("######################################")
 
-# Set tranning parameter
-epochs = 2 # Set low by default for tests, set higher when you actually run this code.
-batch_size = 64
-latent_z_size = 100
+# Set training parameter
+EPOCHS = 2  # Set low by default for tests, set higher when you actually run this code.
+BATCH_SIZE = 64
+LATENT_Z_SIZE = 100
 
-use_gpu = False
-ctx = mx.gpu() if use_gpu else mx.cpu()
+USE_GPU = False
+CTX = mx.gpu() if USE_GPU else mx.cpu()
 
-lr = 0.0002
-beta1 = 0.5
+LR = 0.0002
+BETA1 = 0.5
 
 # Download and preprocess the LWF Face Dataset.
-lfw_url = 'http://vis-www.cs.umass.edu/lfw/lfw-deepfunneled.tgz'
-data_path = 'dataset/lfw_dataset/'
-file_name = 'lfw-deepfunneled.tgz'
-if not os.path.exists(data_path):
-    os.makedirs(data_path)
-    data_file = utils.download(lfw_url, data_path)
+URL_PATH = 'http://vis-www.cs.umass.edu/lfw/lfw-deepfunneled.tgz'
+DATA_PATH = os.path.dirname( os.path.abspath( __file__ ))+'/lfw_dataset/'
+FILE_NAME = 'lfw-deepfunneled.tgz'
+if not os.path.exists(DATA_PATH):
+    os.makedirs(DATA_PATH)
+    data_file = utils.download(URL_PATH, DATA_PATH)
     print("FileName: " + data_file);
     with tarfile.open(data_file) as tar:
         tar.extractall
 
-# Fist, we resize images to size 64 X 64. Then, we normalize all pizel values to the [-1,1] range.
-target_wd = 64
-target_ht = 64
-img_list = []
+# Fist, we resize images to size 64 X 64. Then, we normalize all pixel values to the [-1,1] range.
+RESIZE_WIDTH = 64
+RESIZE_HEIGHT = 64
+IMAGE_LIST = []
 
-def transform(data, target_wd, target_ht):
-    # resize to target_wd * target_ht
-    data = mx.image.imresize(data, target_wd, target_ht)
-    # transpose from (target_wd, target_ht, 3)
-    # to (3, target_wd, target_ht)
-    data = nd.transpose(data, (2,0,1))
+def transform(data, resize_width, resize_height):
+    # resize to resize_width * resize_height
+    data = mx.image.imresize(data, resize_width, resize_height)
+    # transpose from (resize_width, resize_height, 3)
+    # to (3, resize_width, target_ht)
+    data = nd.transpose(data, (2, 0, 1))
     # normalize to [-1, 1]
-    data = data.astype(np.float32)/127.5 - 1
+    data = data.astype(np.float32) / 127.5 - 1
     # if image is greyscale, repeat 3 times to get RGB image.
     if data.shape[0] == 1:
         data = nd.tile(data, (3, 1, 1))
     return data.reshape((1,) + data.shape)
 
-for path, _, fnames in os.walk(data_path):
-    for fname in fnames:
-        if not fname.endswith('.jpg'):
-            continue
-        img = os.path.join(path, fname)
-        img_arr = mx.image.imread(img)
-        img_arr = transform(img_arr, target_wd, target_ht)
-        img_list.append(img_arr)
 
-train_data = mx.io.NDArrayIter(data=nd.concatenate(img_list), batch_size=batch_size)
+for path, _, fileNames in os.walk(DATA_PATH):
+    for file in fileNames:
+        if not file.endswith('.jpg'):
+            continue
+        print("FileName: " + file)
+        imgPath = os.path.join(path, file)
+        img_data = mx.image.imread(imgPath)
+        img_data = transform(img_data, RESIZE_WIDTH, RESIZE_HEIGHT)
+        IMAGE_LIST.append(img_data)
+
+TRAIN_DATA = mx.io.NDArrayIter(data=nd.concatenate(IMAGE_LIST), batch_size=BATCH_SIZE)
+
 
 # Visualize 4 images:
 def visualize(img_arr):
-    plt.imshow(((img_arr.asnumpy().transpose(1,2,0) + 1.0) * 127.5).astype(np.uint8))
+    plt.imshow(((img_arr.asnumpy().transpose(1, 2, 0) + 1.0) * 127.5).astype(np.uint8))
     plt.axis('off')
 
     for i in range(4):
-        plt.subplot(1,4,i+1)
-        visualize(img_list[i + 10][0])
+        plt.subplot(1, 4, i + 1)
+        visualize(IMAGE_LIST[i + 10][0])
     plt.show()
 
 
@@ -130,46 +133,49 @@ with netD.name_scope():
 # loss
 loss = gluon.loss.SigmoidBinaryCrossEntropyLoss()
 # initialize the generator and the discriminator
-netG.initialize(mx.init.Normal(0.02), ctx=ctx)
-netD.initialize(mx.init.Normal(0.02), ctx=ctx)
+netG.initialize(mx.init.Normal(0.02), ctx=CTX)
+netD.initialize(mx.init.Normal(0.02), ctx=CTX)
 # trainer for the generator and the discriminator
-trainerG = gluon.Trainer(netG.collect_params(), 'adam', {'learning_rate': lr, 'beta1': beta1})
-trainerD = gluon.Trainer(netD.collect_params(), 'adam', {'learning_rate': lr, 'beta1': beta1})
+trainerG = gluon.Trainer(netG.collect_params(), 'adam', {'learning_rate': LR, 'beta1': BETA1})
+trainerD = gluon.Trainer(netD.collect_params(), 'adam', {'learning_rate': LR, 'beta1': BETA1})
 
 # [ Training Loop ]
 from datetime import datetime
 import time
 import logging
 
-real_label = nd.ones((batch_size,), ctx=ctx)
-fake_label = nd.zeros((batch_size,),ctx=ctx)
+real_label = nd.ones((BATCH_SIZE,), ctx=CTX)
+fake_label = nd.zeros((BATCH_SIZE,), ctx=CTX)
+
 
 def facc(label, pred):
     pred = pred.ravel()
     label = label.ravel()
     return ((pred > 0.5) == label).mean()
+
+
 metric = mx.metric.CustomMetric(facc)
 
-stamp =  datetime.now().strftime('%Y_%m_%d-%H_%M')
+stamp = datetime.now().strftime('%Y_%m_%d-%H_%M')
 logging.basicConfig(level=logging.DEBUG)
 
-for epoch in range(epochs):
+for epoch in range(EPOCHS):
     tic = time.time()
     btic = time.time()
-    train_data.reset()
+    TRAIN_DATA.reset()
     iter = 0
-    for batch in train_data:
+    for batch in TRAIN_DATA:
         ############################
         # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
         ###########################
-        data = batch.data[0].as_in_context(ctx)
-        latent_z = mx.nd.random_normal(0, 1, shape=(batch_size, latent_z_size, 1, 1), ctx=ctx)
+        data = batch.data[0].as_in_context(CTX)
+        latent_z = mx.nd.random_normal(0, 1, shape=(BATCH_SIZE, LATENT_Z_SIZE, 1, 1), ctx=CTX)
 
         with autograd.record():
             # train with real image
             output = netD(data).reshape((-1, 1))
             errD_real = loss(output, real_label)
-            metric.update([real_label,], [output,])
+            metric.update([real_label, ], [output, ])
 
             # train with fake image
             fake = netG(latent_z)
@@ -177,7 +183,7 @@ for epoch in range(epochs):
             errD_fake = loss(output, fake_label)
             errD = errD_real + errD_fake
             errD.backward()
-            metric.update([fake_label,], [output,])
+            metric.update([fake_label, ], [output, ])
 
         trainerD.step(batch.data[0].shape[0])
 
@@ -195,10 +201,10 @@ for epoch in range(epochs):
         # Print log infomation every ten batches
         if iter % 10 == 0:
             name, acc = metric.get()
-            logging.info('speed: {} samples/s'.format(batch_size / (time.time() - btic)))
+            logging.info('speed: {} samples/s'.format(BATCH_SIZE / (time.time() - btic)))
             logging.info('discriminator loss = %f, generator loss = %f, binary training acc = %f at iter %d epoch %d'
-                     %(nd.mean(errD).asscalar(),
-                       nd.mean(errG).asscalar(), acc, iter, epoch))
+                         % (nd.mean(errD).asscalar(),
+                            nd.mean(errG).asscalar(), acc, iter, epoch))
         iter = iter + 1
         btic = time.time()
 
@@ -216,18 +222,18 @@ for epoch in range(epochs):
 # Given a trained generator, we can generate some images of faces.
 num_image = 8
 for i in range(num_image):
-    latent_z = mx.nd.random_normal(0, 1, shape=(1, latent_z_size, 1, 1), ctx=ctx)
-    img = netG(latent_z)
-    plt.subplot(2,4,i+1)
-    visualize(img[0])
+    latent_z = mx.nd.random_normal(0, 1, shape=(1, LATENT_Z_SIZE, 1, 1), ctx=CTX)
+    imgPath = netG(latent_z)
+    plt.subplot(2, 4, i + 1)
+    visualize(imgPath[0])
 plt.show()
 
 num_image = 12
-latent_z = mx.nd.random_normal(0, 1, shape=(1, latent_z_size, 1, 1), ctx=ctx)
+latent_z = mx.nd.random_normal(0, 1, shape=(1, LATENT_Z_SIZE, 1, 1), ctx=CTX)
 step = 0.05
 for i in range(num_image):
-    img = netG(latent_z)
-    plt.subplot(3,4,i+1)
-    visualize(img[0])
+    imgPath = netG(latent_z)
+    plt.subplot(3, 4, i + 1)
+    visualize(imgPath[0])
     latent_z += 0.05
 plt.show()
