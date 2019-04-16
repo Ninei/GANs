@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="876f24d7-176c-4ac8-a369-06cf24ec0d01" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/GANs.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Exercise/Deep Convolutional GANs/Face_MXNet.py" beforeDir="false" afterPath="$PROJECT_DIR$/Exercise/Deep Convolutional GANs/Face_MXNet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,13 +11,16 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FavoritesManager">
+    <favorites_list name="GANs" />
+  </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Exercise/Deep Convolutional GANs/Face_MXNet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="465">
-              <caret line="31" column="60" selection-start-line="31" selection-start-column="60" selection-end-line="31" selection-end-column="60" />
+            <state relative-caret-position="510">
+              <caret line="34" column="26" lean-forward="true" selection-start-line="34" selection-start-column="26" selection-end-line="34" selection-end-column="26" />
               <folding>
                 <element signature="e#0#37#0" expanded="true" />
               </folding>
@@ -34,8 +32,8 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>facc</find>
       <find>fname</find>
+      <find>facc</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -59,9 +57,11 @@
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
+      <showMembers ProjectPane="true" />
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -84,7 +84,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -92,6 +91,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="PyCoverageOptionsProvider">
     <option name="myUseBundledCoveragePy" value="true" />
@@ -171,26 +171,22 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1555375867885</updated>
-      <workItem from="1555375876346" duration="3458000" />
+      <workItem from="1555375876346" duration="3879000" />
+      <workItem from="1555403465334" duration="374000" />
+      <workItem from="1555404108844" duration="57000" />
+      <workItem from="1555404176081" duration="414000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3458000" />
+    <option name="totallyTimeSpent" value="4724000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="86" y="35" width="2412" height="1325" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19578059" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Database Changes" />
-      <window_info anchor="bottom" id="Version Control" sideWeight="0.49975598" weight="0.32917038" />
-      <window_info anchor="bottom" id="Python Console" sideWeight="0.49957806" visible="true" weight="0.32846716" />
-      <window_info anchor="bottom" id="Terminal" sideWeight="0.50042194" side_tool="true" weight="0.32846716" />
-      <window_info anchor="bottom" id="Event Log" sideWeight="0.50042194" side_tool="true" weight="0.32846716" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49879226" visible="true" weight="0.20084389" />
+      <window_info id="Structure" order="1" sideWeight="0.5012077" side_tool="true" weight="0.19746836" />
+      <window_info id="Favorites" order="2" sideWeight="0.5012077" side_tool="true" weight="0.19746836" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32927817" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -198,12 +194,18 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" x="0" y="0" width="472" height="1125" id="Documentation" sideWeight="0.5012077" side_tool="true" visible="true" weight="0.32700422" />
-      <window_info anchor="right" id="SciView" sideWeight="0.49879226" weight="0.3299578" />
-      <window_info anchor="right" id="Database" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49975598" weight="0.32917038" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50042194" side_tool="true" weight="0.32846716" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.5008439" side_tool="true" visible="true" weight="0.32846716" />
+      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.49915612" visible="true" weight="0.32846716" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" sideWeight="0.49879226" weight="0.3299578" />
+      <window_info anchor="right" x="0" y="0" width="472" height="1125" id="Documentation" order="4" sideWeight="0.5012077" side_tool="true" visible="true" weight="0.32700422" />
+      <window_info anchor="right" id="Database" order="5" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -217,10 +219,15 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1042" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Exercise/Deep Convolutional GANs/Face_MXNet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="31" column="60" selection-start-line="31" selection-start-column="60" selection-end-line="31" selection-end-column="60" />
+        <state relative-caret-position="510">
+          <caret line="34" column="26" lean-forward="true" selection-start-line="34" selection-start-column="26" selection-end-line="34" selection-end-column="26" />
           <folding>
             <element signature="e#0#37#0" expanded="true" />
           </folding>
