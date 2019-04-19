@@ -28,7 +28,8 @@ CTX = mx.gpu() if USE_GPU else mx.cpu()
 # [ LWF Face Dataset 다운로드 ]
 # LWF Face Dataset, which contains roughly 13000 images of faces
 URL_PATH = 'http://vis-www.cs.umass.edu/lfw/lfw-deepfunneled.tgz'
-DATA_PATH = os.path.dirname( os.path.abspath( __file__ ))+'/lfw_dataset/'
+# DATA_PATH = os.path.dirname( os.path.abspath( __file__ ))+'/lfw_dataset/'
+DATA_PATH = 'dataset/lfw_dataset/'
 FILE_NAME = 'lfw-deepfunneled.tgz'
 if not os.path.exists(DATA_PATH):
     print("File Downloading - " + DATA_PATH)
