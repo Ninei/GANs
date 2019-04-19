@@ -38,6 +38,13 @@ if not os.path.exists(DATA_PATH):
     with tarfile.open(data_file) as tar:
         tar.extractall
 
+print(DATA_PATH+FILE_NAME);
+try:
+    with tarfile.open("/Volumes/NineiDB/DB/Workspace/Sogang/GANs/Exercise/\[DCGAN\]\ Deep\ Convolutional\ GANs/lfw_dataset/"+FILE_NAME) as tar:
+        tar.extractall
+except:
+    print("An exception occurred")
+
 # [이미지 데이터 정규화]
 # Fist, we resize images to size 64 X 64. Then, we normalize all pixel values to the [-1,1] range.
 RESIZE_WIDTH = 64
