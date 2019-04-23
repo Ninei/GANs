@@ -5,7 +5,7 @@ import tarfile
 import matplotlib.image as mpimg
 from matplotlib import pyplot as plt
 
-import mxnet as mx
+import mxnet as mx # Deep Learning Framework
 from mxnet import gluon
 from mxnet import ndarray as nd
 from mxnet.gluon import nn, utils
@@ -17,7 +17,7 @@ print("### Start DCGANs~~!!")
 print("######################################")
 
 # [ 훈련 파라미터 설정 ]
-EPOCHS = 2  # Set higher when you actually run this code.
+EPOCHS = 10
 BATCH_SIZE = 64
 LATENT_Z_SIZE = 100 # ?
 LEARNING_RATE = 0.0002
@@ -48,8 +48,7 @@ IMAGE_LIST = []
 def transform(data, resize_width, resize_height):
     # resize to resize_width * resize_height
     data = mx.image.imresize(data, resize_width, resize_height)
-    # transpose from (resize_width, resize_height, 3)
-    # to (3, resize_width, target_ht)
+    # transpose from (resize_width, resize_height, 3) to (3, resize_width, target_ht)
     data = nd.transpose(data, (2, 0, 1))
     # normalize to [-1, 1]
     data = data.astype(np.float32) / 127.5 - 1
@@ -71,12 +70,12 @@ for path, _, fileNames in os.walk(DATA_PATH):
 # [훈련데이터 생성]
 TRAIN_DATA = mx.io.NDArrayIter(data=nd.concatenate(IMAGE_LIST), batch_size=BATCH_SIZE)
 
-# [이미지 시각화]
+# [이미지 시각화] - matplotlib import pyplot as plt
 def visualize(img_arr):
     plt.imshow(((img_arr.asnumpy().transpose(1, 2, 0) + 1.0) * 127.5).astype(np.uint8))
-    plt.axis('off')
+    plt.axis('off') # 축
     for sp in range(4):
-        plt.subplot(1, 4, sp + 1)
+        plt.subplot(1, 4, sp + 1) # 도화지(Figure)를 분할해 그래프 그리기
         visualize(IMAGE_LIST[sp + 10][0])
     plt.show()
 
@@ -93,26 +92,27 @@ def visualize(img_arr):
 # Generator의 출력단의 활성함수로 Tanh 사용, 나머지는 ReLU 사용
 nc = 3
 ngf = 64
-neuralNet_generator = nn.Sequential() # nn is Neural Network Layer
+neuralNet_generator = nn.Sequential() # nn is Neural Network Layer, 모델 초기화
 with neuralNet_generator.name_scope():
-    # input is Z, going into a convolution
-    neuralNet_generator.add(nn.Conv2DTranspose(ngf * 8, 4, 1, 0, use_bias=False))
+    # input is Z, going into a convolution - Input Node - 1024
+    neuralNet_generator.add(nn.Conv2DTranspose(ngf * 8, 4, 1, 0, use_bias=False)) # 첫번째 Hidden Layer - 노드 64 x 8: 512
+    # Batch normalization layer. Normalizes the input at each batch, i.e. applies a transformation that maintains the mean activation close to 0 and the activation standard deviation close to 1.
     neuralNet_generator.add(nn.BatchNorm())
-    neuralNet_generator.add(nn.Activation('relu'))
+    neuralNet_generator.add(nn.Activation('relu')) # 활성화함수 relu
     # state size. (ngf*8) x 4 x 4
-    neuralNet_generator.add(nn.Conv2DTranspose(ngf * 4, 4, 2, 1, use_bias=False))
+    neuralNet_generator.add(nn.Conv2DTranspose(ngf * 4, 4, 2, 1, use_bias=False)) # 두번째 Hidden Layer - 노드 64 x 4: 256
     neuralNet_generator.add(nn.BatchNorm())
     neuralNet_generator.add(nn.Activation('relu'))
     # state size. (ngf*8) x 8 x 8
-    neuralNet_generator.add(nn.Conv2DTranspose(ngf * 2, 4, 2, 1, use_bias=False))
+    neuralNet_generator.add(nn.Conv2DTranspose(ngf * 2, 4, 2, 1, use_bias=False)) # 세번째 Hidden Layer - 노드 64 x 2: 128
     neuralNet_generator.add(nn.BatchNorm())
     neuralNet_generator.add(nn.Activation('relu'))
     # state size. (ngf*8) x 16 x 16
-    neuralNet_generator.add(nn.Conv2DTranspose(ngf, 4, 2, 1, use_bias=False))
+    neuralNet_generator.add(nn.Conv2DTranspose(ngf, 4, 2, 1, use_bias=False)) # 네번째 Hidden Layer - 노드 64
     neuralNet_generator.add(nn.BatchNorm())
     neuralNet_generator.add(nn.Activation('relu'))
     # state size. (ngf*8) x 32 x 32
-    neuralNet_generator.add(nn.Conv2DTranspose(nc, 4, 2, 1, use_bias=False))
+    neuralNet_generator.add(nn.Conv2DTranspose(nc, 4, 2, 1, use_bias=False)) # Output(출력단) Layer - 노드 3
     neuralNet_generator.add(nn.Activation('tanh')) # 출력단의 활성화 함수
     # state size. (nc) x 64 x 64
 
@@ -141,11 +141,13 @@ with neuralNet_discriminator.name_scope():
 
 # [ Setup Loss Function and Optimizer ]
 # loss
+# The cross-entropy loss for binary classification. Userful training logistic regression.
 loss = gluon.loss.SigmoidBinaryCrossEntropyLoss()
 # initialize the generator and the discriminator
 neuralNet_generator.initialize(mx.init.Normal(0.02), ctx=CTX)
 neuralNet_discriminator.initialize(mx.init.Normal(0.02), ctx=CTX)
 # trainer for the generator and the discriminator
+# 'adam': Adam(Adaptive moment estimation) optimizer(https://gomguard.tistory.com/187)
 trainer_generator = gluon.Trainer(neuralNet_generator.collect_params(), 'adam', {'learning_rate': LEARNING_RATE, 'beta1': BETA1})
 trainer_disciminator = gluon.Trainer(neuralNet_discriminator.collect_params(), 'adam', {'learning_rate': LEARNING_RATE, 'beta1': BETA1})
 
