@@ -1,33 +1,31 @@
 import tensorflow as tf
-import numpy as np
+import numpy as np # 파이썬에서 배열을 사용하기 위한 표준 패키지
+import seaborn as sb # Seaborn은 Matplotlib을 기반으로 다양한 색상 테마와 통계용 차트 등의 기능을 추가한 시각화 패키지
+import matplotlib.pyplot as plt # Matplotlib는 파이썬에서 자료를 차트(chart)나 플롯(plot)으로 시각화(visulaization)하는 패키지
 import os
-# from training_data import *
-import seaborn as sb
-import matplotlib.pyplot as plt
 
-# DATA_PATH = '../../dataset/plots/'
-DATA_PATH = os.path.abspath(__file__ + "../../../../")+'/output/plots/'
+# 최종 결과 파일 저장을 위한 디렉토리
+ROOT_RESULT_PATH = os.path.abspath(__file__ + "../../../../")+'/output/plots/'
 
-def get_y(x):
-    return 10 + x*x
-
-
-def sample_data(n=10000, scale=100):
+# 샘플 데이터 생성
+def createSampleData(n=10000, scale=100):
     data = []
 
-    x = scale*(np.random.random_sample((n,))-0.5)
+    # np.random.random_sample: 0.0 ~ 1.0 random variable
+    # 5 * np.random.random_sample((3, 2)) - 5 >> [-5 ~ 0]
+    # 3 by 2 >> array([[-3.99149989, -0.52338984], [-2.99091858, -0.79479508], [-1.23204345, -1.75224494]])
+    x = scale*(np.random.random_sample((n,))-0.5) # n by 1 >>  array([49.149989 -1.5224494 ... 2.5324167])
 
     for i in range(n):
-        yi = get_y(x[i])
+        yi = 10 + x[i] * x[i]
         data.append([x[i], yi])
+    # n by 2 >> [[8.024382387854756, 74.39071270651358], [-1.9397242335024378, 13.76253010203662], ..., [28.81166337629969, 840.1119465092089]]
 
     return np.array(data)
 
-sb.set()
-# td = Training()
-
+# uniform(low=0.0, high=1.0, size=None)
 def sample_Z(m, n):
-    return np.random.uniform(-1., 1., size=[m, n])
+    return np.random.uniform(-1.0, 1.0, size=[m, n])
 
 def generator(Z,hsize=[16, 16],reuse=False):
     with tf.variable_scope("GAN/Generator",reuse=reuse):
@@ -46,6 +44,8 @@ def discriminator(X,hsize=[16, 16],reuse=False):
 
     return out, h3
 
+# Set aesthetic parameters in one step.
+sb.set()
 
 X = tf.placeholder(tf.float32,[None,2])
 Z = tf.placeholder(tf.float32,[None,2])
@@ -71,14 +71,15 @@ batch_size = 256
 nd_steps = 10
 ng_steps = 10
 
-x_plot = sample_data(n=batch_size)
+x_plot = createSampleData(n=batch_size)
 
-f = open(DATA_PATH+'loss_logs.csv','w')
+# Write LossLog File
+f = open(ROOT_RESULT_PATH+'loss_logs.csv','w')
 f.write('Iteration,Discriminator Loss,Generator Loss\n')
 
 for i in range(10001):
-    X_batch = sample_data(n=batch_size)
-    Z_batch = sample_Z(batch_size, 2)
+    X_batch = createSampleData(n=batch_size) # 256 by 2, n by 2 >> [[8.024382387854756, 74.39071270651358], [-1.9397242335024378, 13.76253010203662], ..., [28.81166337629969, 840.1119465092089]]
+    Z_batch = sample_Z(batch_size, 2) # 256 by 2, (-1 ~ 0) >> [[0.96149095  0.25940196] [-0.90235707 -0.58915083] ... [-0.44557393 -0.25887667]]
 
     for _ in range(nd_steps):
         _, dloss = sess.run([disc_step, disc_loss], feed_dict={X: X_batch, Z: Z_batch})
@@ -102,7 +103,7 @@ for i in range(10001):
         plt.legend((xax,gax), ("Real Data","Generated Data"))
         plt.title('Samples at Iteration %d'%i)
         plt.tight_layout()
-        plt.savefig(DATA_PATH+'iterations/iteration_%d.png'%i)
+        plt.savefig(ROOT_RESULT_PATH+'iterations/iteration_%d.png'%i)
         plt.close()
 
         plt.figure()
@@ -115,7 +116,7 @@ for i in range(10001):
                                "Generated Data Before G step","Generated Data After G step"))
         plt.title('Transformed Features at Iteration %d'%i)
         plt.tight_layout()
-        plt.savefig(DATA_PATH+'features/feature_transform_%d.png'%i)
+        plt.savefig(ROOT_RESULT_PATH+'features/feature_transform_%d.png'%i)
         plt.close()
 
         plt.figure()
@@ -130,6 +131,7 @@ for i in range(10001):
 
         plt.title('Centroid of Transformed Features at Iteration %d'%i)
         plt.tight_layout()
-        plt.savefig(DATA_PATH+'features/feature_transform_centroid_%d.png'%i)
+        plt.savefig(ROOT_RESULT_PATH+'features/feature_transform_centroid_%d.png'%i)
         plt.close()
+
 f.close()
