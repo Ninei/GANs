@@ -73,7 +73,7 @@ ng_steps = 10
 
 x_plot = sample_data(n=batch_size)
 
-f = open('loss_logs.csv','w')
+f = open(DATA_PATH+'loss_logs.csv','w')
 f.write('Iteration,Discriminator Loss,Generator Loss\n')
 
 for i in range(10001):
