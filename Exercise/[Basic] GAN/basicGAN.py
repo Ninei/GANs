@@ -1,28 +1,30 @@
 import tensorflow as tf
 import numpy as np
-from training_data import *
+import os
+# from training_data import *
 import seaborn as sb
 import matplotlib.pyplot as plt
 
-class Training:
-    # def get_y(x):
-    #     return 10 + x*x
+# DATA_PATH = '../../dataset/plots/'
+DATA_PATH = os.path.abspath(__file__ + "../../../../")+'/output/plots/'
 
-    def sample_data(self, n=10000, scale=100):
+def get_y(x):
+    return 10 + x*x
 
-        x = scale*(np.random.random_sample((n,))-0.5)
 
-        for i in range(n):
-            yi = 10 + x[i] * x[i]
-            self.data.append([x[i], yi])
+def sample_data(n=10000, scale=100):
+    data = []
 
-        return np.array(self.data)
-    
-    def __init__(self):
-        self.data = []
+    x = scale*(np.random.random_sample((n,))-0.5)
+
+    for i in range(n):
+        yi = get_y(x[i])
+        data.append([x[i], yi])
+
+    return np.array(data)
 
 sb.set()
-td = Training()
+# td = Training()
 
 def sample_Z(m, n):
     return np.random.uniform(-1., 1., size=[m, n])
@@ -69,13 +71,13 @@ batch_size = 256
 nd_steps = 10
 ng_steps = 10
 
-x_plot = td.sample_data(n=batch_size)
+x_plot = sample_data(n=batch_size)
 
 f = open('loss_logs.csv','w')
 f.write('Iteration,Discriminator Loss,Generator Loss\n')
 
 for i in range(10001):
-    X_batch = td.sample_data(n=batch_size)
+    X_batch = sample_data(n=batch_size)
     Z_batch = sample_Z(batch_size, 2)
 
     for _ in range(nd_steps):
@@ -100,7 +102,7 @@ for i in range(10001):
         plt.legend((xax,gax), ("Real Data","Generated Data"))
         plt.title('Samples at Iteration %d'%i)
         plt.tight_layout()
-        plt.savefig('../plots/iterations/iteration_%d.png'%i)
+        plt.savefig(DATA_PATH+'iterations/iteration_%d.png'%i)
         plt.close()
 
         plt.figure()
@@ -109,12 +111,11 @@ for i in range(10001):
         grd = plt.scatter(grep_dstep[:,0], grep_dstep[:,1], alpha=0.5)
         grg = plt.scatter(grep_gstep[:,0], grep_gstep[:,1], alpha=0.5)
 
-
         plt.legend((rrd, rrg, grd, grg), ("Real Data Before G step","Real Data After G step",
                                "Generated Data Before G step","Generated Data After G step"))
         plt.title('Transformed Features at Iteration %d'%i)
         plt.tight_layout()
-        plt.savefig('../plots/features/feature_transform_%d.png'%i)
+        plt.savefig(DATA_PATH+'features/feature_transform_%d.png'%i)
         plt.close()
 
         plt.figure()
@@ -129,6 +130,6 @@ for i in range(10001):
 
         plt.title('Centroid of Transformed Features at Iteration %d'%i)
         plt.tight_layout()
-        plt.savefig('../plots/features/feature_transform_centroid_%d.png'%i)
+        plt.savefig(DATA_PATH+'features/feature_transform_centroid_%d.png'%i)
         plt.close()
 f.close()
