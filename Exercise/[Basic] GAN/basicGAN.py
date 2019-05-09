@@ -59,27 +59,25 @@ f_logits, g_rep = discriminator(G_sample, reuse=True) # f_logits: out, g_rep: hi
 # reuse: true >> https://github.com/tensorflowkorea/tensorflow-kr/blob/master/g3doc/how_tos/variable_scope/index.md
 
 # 손실함수 정의
-# tf.reduce_mean: ??
-# tf.nn.sigmoid_cross_entropy_with_logits: ??
+# tf.nn.sigmoid_cross_entropy_with_logits: Cross Entropy
 # tf.ones_like: tensor와 동일한 타입과 형태의 텐서를 만들고, 모든 원소의 값을 1로 초기화
 # tf.zeros_like: tensor와 동일한 타입과 형태의 텐서를 만들고, 모든 원소의 값을 0으로 초기화
-loss_discriminator = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=r_logits,labels=tf.ones_like(r_logits)) + tf.nn.sigmoid_cross_entropy_with_logits(logits=f_logits,labels=tf.zeros_like(f_logits)))
-loss_generator = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=f_logits,labels=tf.ones_like(f_logits)))
+loss_discriminator = tf.nn.sigmoid_cross_entropy_with_logits(logits=r_logits,labels=tf.ones_like(r_logits)) + tf.nn.sigmoid_cross_entropy_with_logits(logits=f_logits,labels=tf.zeros_like(f_logits))
+loss_discriminator = tf.reduce_mean(loss_discriminator)
+loss_generator = tf.nn.sigmoid_cross_entropy_with_logits(logits=f_logits,labels=tf.ones_like(f_logits))
+loss_generator = tf.reduce_mean(loss_generator)
 
 # Variables collection 설정
-# 해당 variable을 코드의 다른 위치에서 불러오기 위해, variable_scope과 get_variable()함수의 조합은 name filed값을 기억 사용 가능
-# 특정 목적을 위한 variable의 집합을 불러올 때는 collection과 tf.get_collection()의 조합으로 가능
-# tf.get_collection(key)가 실행되면, key의 collection에 속하는 variable들의 리스트가 리턴
+# variable_scope과 get_variable()함수의 조합은 name filed의 String 값을 알고 있어야 사용 가능
+# collection과 tf.get_collection(key, scope)의 조합으로 변수로 활용 가능
 gen_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="GAN/Generator")
 disc_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="GAN/Discriminator")
 
 # 최적화: RMSPropOptimizer
-# tf.train.RMSPropOptimizer: mini-batch gradient descent(Divide the learning rate for a weight by a running average of the magnitudes of recent gradients for that weight.)
-# minimize: Add operations to minimize loss by updating var_list.
-train_generator = tf.train.RMSPropOptimizer(learning_rate=0.001).minimize(loss_generator, var_list = gen_vars) # G Train step
-train_discriminator = tf.train.RMSPropOptimizer(learning_rate=0.001).minimize(loss_discriminator, var_list = disc_vars) # D Train step
+# tf.train.RMSPropOptimizer: mini-batch gradient descent
+train_generator = tf.train.RMSPropOptimizer(learning_rate=0.001).minimize(loss_generator, var_list = gen_vars)
+train_discriminator = tf.train.RMSPropOptimizer(learning_rate=0.001).minimize(loss_discriminator, var_list = disc_vars)
 
-# sess = tf.Session(config=config)
 sess = tf.Session()
 tf.global_variables_initializer().run(session=sess)
 
