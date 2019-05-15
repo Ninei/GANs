@@ -6,6 +6,8 @@ import uuid
 
 # Output Directory
 ROOT_RESULT_PATH = os.path.abspath(__file__ + "../../../../")+'/output/plots/'
+GENERATOR_SCOPE = "GAN/Generator"
+DISCRIMINATOR_SCOPE = "GAN/Discriminator"
 
 ### Create Real Sample Data
 def createRealSample(n=10000, scale=100):
@@ -25,7 +27,7 @@ def createRealSample(n=10000, scale=100):
 
 ### Creates a fully connected neural network of 2 hidden layers
 def createGeneratorNetowk(noise_placeholder, hsize=[16, 16], reuse=False): # Z: [none, 2]
-    with tf.variable_scope("GAN/Generator",reuse=reuse):
+    with tf.variable_scope(GENERATOR_SCOPE,reuse=reuse):
         # dense(inputs, units, activation ...)
         hidden1 = tf.layers.dense(noise_placeholder, hsize[0], activation=tf.nn.leaky_relu) # hidden1 Tensor name: GAN/Generator/dense/LeakyRelu:0, shape=(?, 16), dtype=float32
         hidden2 = tf.layers.dense(hidden1, hsize[1], activation=tf.nn.leaky_relu) # hidden2 name: GAN/Generator/dense_1/LeakyRelu:0, shape=(?, 16), dtype=float32
@@ -36,14 +38,14 @@ def createGeneratorNetowk(noise_placeholder, hsize=[16, 16], reuse=False): # Z: 
 
 ### Creates a fully connected neural network of 3 hidden layers
 def createDiscriminatorNetWork(real_placeholder, hsize=[16, 16], reuse=False):
-    with tf.variable_scope("GAN/Discriminator",reuse=reuse):
+    with tf.variable_scope(DISCRIMINATOR_SCOPE,reuse=reuse):
         # dense(inputs, units, activation ...)
         hidden1 = tf.layers.dense(real_placeholder, hsize[0], activation=tf.nn.leaky_relu) # h1 Tensor("GAN/Discriminator/dense/LeakyRelu:0", shape=(?, 16), dtype=float32)
         hidden2 = tf.layers.dense(hidden1, hsize[1], activation=tf.nn.leaky_relu) #h2 Tensor("GAN/Discriminator/dense_1/LeakyRelu:0", shape=(?, 16), dtype=float32)
         hidden3 = tf.layers.dense(hidden2, 2) # h3 Tensor("GAN/Discriminator/dense_2/BiasAdd:0", shape=(?, 2), dtype=float32)
         out = tf.layers.dense(hidden3, 1) # out Tensor("GAN/Discriminator/dense_3/BiasAdd:0", shape=(?, 1), dtype=float32)
 
-    return out, hidden3
+    return out
 # Layer: X[?,2] >> hidden1[?, 16] >> hidden2[?,16] >> hidden3[?,2] >> out[?,1]
 
 ### Define Placeholders
@@ -53,23 +55,23 @@ noise_sample_placeholder = tf.placeholder(tf.float32,[None,2]) # n by 2
 ### Generator Neural Network
 generator_network = createGeneratorNetowk(noise_sample_placeholder)
 ### Discriminator Neural Network for Real Sample Data
-real_logits, real_hidden3 = createDiscriminatorNetWork(real_samples_placeholder)
+discriminator_real_network = createDiscriminatorNetWork(real_samples_placeholder)
 ### Discriminator Neural Network for Generator Sample Noise Data
-fake_logits, fake_hidden3 = createDiscriminatorNetWork(generator_network, reuse=True) # reuse: true >> generator network reuse
-# logits(‘logistic’과 +‎ ‘probit’의 합성어): https://opentutorials.org/module/3653/22995
+discriminator_fake_network = createDiscriminatorNetWork(generator_network, reuse=True) # reuse: true >> generator network reuse
 
 ### Cost function
 # tf.nn.sigmoid_cross_entropy_with_logits: Cross Entropy
-cost_discriminator = tf.nn.sigmoid_cross_entropy_with_logits(logits=real_logits,labels=tf.ones_like(real_logits)) + tf.nn.sigmoid_cross_entropy_with_logits(logits=fake_logits,labels=tf.zeros_like(fake_logits))
-cost_discriminator = tf.reduce_mean(cost_discriminator)
-cost_generator = tf.nn.sigmoid_cross_entropy_with_logits(logits=fake_logits,labels=tf.ones_like(fake_logits))
+cost_real_discriminator = tf.nn.sigmoid_cross_entropy_with_logits(logits=discriminator_real_network,labels=tf.ones_like(discriminator_real_network))
+cost_fake_discriminator = tf.nn.sigmoid_cross_entropy_with_logits(logits=discriminator_fake_network,labels=tf.zeros_like(discriminator_fake_network))
+cost_discriminator = tf.reduce_mean(cost_real_discriminator+cost_fake_discriminator)
+cost_generator = tf.nn.sigmoid_cross_entropy_with_logits(logits=discriminator_fake_network,labels=tf.ones_like(discriminator_fake_network))
 cost_generator = tf.reduce_mean(cost_generator)
 
 ### Variables collection
 # variable_scope과 get_variable()함수의 조합은 name filed의 String 값을 알고 있어야 사용 가능
 # collection과 tf.get_collection(key, scope)의 조합으로 변수로 활용 가능
-vars_generator = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="GAN/Generator")
-vars_discriminator = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="GAN/Discriminator")
+vars_generator = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=GENERATOR_SCOPE)
+vars_discriminator = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=DISCRIMINATOR_SCOPE)
 
 ### Optimization: RMSPropOptimizer
 # tf.train.RMSPropOptimizer: mini-batch gradient descent
@@ -89,11 +91,14 @@ tf.global_variables_initializer().run(session=sess)
 
 batch_size = 256
 steps_discriminator = 10
-steps_generator = 10
+steps_generator = 6
 
 real_pos = createRealSample(n=batch_size)
 
 ### Write LossLog File
+if not os.path.exists(ROOT_RESULT_PATH):
+    os.makedirs(ROOT_RESULT_PATH)
+    os.makedirs(ROOT_RESULT_PATH+'iterations/')
 f = open(ROOT_RESULT_PATH+'loss_logs.csv','w')
 f.write('Iteration,Discriminator Loss,Generator Loss\n')
 
@@ -102,16 +107,16 @@ for i in range(10001):
     noise_batch = np.random.uniform(-1.0, 1.0, size=[batch_size, 2])  # 256 by 2, (-1 ~ 1) >> [[0.96149095  0.25940196] [-0.90235707 -0.58915083] ... [-0.44557393 -0.25887667]]
 
     for _ in range(steps_discriminator): # _ : ignore index
-        _, dcost = sess.run([optimizer_discriminator, cost_discriminator], feed_dict={real_samples_placeholder: real_batch, noise_sample_placeholder: noise_batch})
+        _, loss_discriminator = sess.run([optimizer_discriminator, cost_discriminator], feed_dict={real_samples_placeholder: real_batch, noise_sample_placeholder: noise_batch})
 
     for _ in range(steps_generator):
-        _, gcost = sess.run([optimizer_generator, cost_generator], feed_dict={noise_sample_placeholder: noise_batch})
+        _, loss_generator = sess.run([optimizer_generator, cost_generator], feed_dict={noise_sample_placeholder: noise_batch})
 
-    print ("Iterations: %d\t Discriminator loss: %.4f\t Generator loss: %.4f"%(i, dcost, gcost))
+    print ("Iterations: %d\t Discriminator loss: %.4f\t Generator loss: %.4f"%(i, loss_discriminator, loss_generator))
 
     # Write log file
     if i%10 == 0:
-        f.write("%d,\t\t%f,\t\t%f\n"%(i, dcost, gcost))
+        f.write("%d,\t\t%f,\t\t%f\n"%(i, loss_discriminator, loss_generator))
 
     # Draw Graph
     if i%1000 == 0:
