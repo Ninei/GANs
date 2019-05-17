@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/usr/local/Cellar/python/3.7.3/bin/python3",
+    "python.pythonPath": ".venv/bin/python",
     "git.ignoreLimitWarning": true,
     "python.linting.pylintEnabled": false
 }
