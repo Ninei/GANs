@@ -116,3 +116,5 @@ dmypy.json
 # bin, dataset
 dataset/
 output/
+runs/
+data/
