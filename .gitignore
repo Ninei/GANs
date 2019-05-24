@@ -117,4 +117,5 @@ dmypy.json
 dataset/
 output/
 runs/
-data/
+.dataset
+.output

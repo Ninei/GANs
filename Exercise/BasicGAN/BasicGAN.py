@@ -5,9 +5,12 @@ import os
 import uuid
 
 # Output Directory
-ROOT_RESULT_PATH = os.path.abspath(__file__ + "../../../../")+'/output/plots/'
+ROOT_RESULT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), '.output/plots/')
 GENERATOR_SCOPE = "GAN/Generator"
 DISCRIMINATOR_SCOPE = "GAN/Discriminator"
+
+if not os.path.exists(ROOT_RESULT_PATH): os.makedirs(ROOT_RESULT_PATH+'iterations/')
+
 
 ### Create Real Sample Data
 def createRealSample(n=10000, scale=100):
@@ -96,9 +99,6 @@ steps_generator = 6
 real_pos = createRealSample(n=batch_size)
 
 ### Write LossLog File
-if not os.path.exists(ROOT_RESULT_PATH):
-    os.makedirs(ROOT_RESULT_PATH)
-    os.makedirs(ROOT_RESULT_PATH+'iterations/')
 f = open(ROOT_RESULT_PATH+'loss_logs.csv','w')
 f.write('Iteration,Discriminator Loss,Generator Loss\n')
 
