@@ -49,9 +49,9 @@ sess.run(tf.global_variables_initializer())
 # ********* Training and Testing
 noise_test = np.random.normal(size=(10, 128)) # 10 = Test Sample Size, 128 = Noise Dimension
 for epoch in range(200): # 200 = Num. of Epoch
-    noise = np.random.normal(size=(100, 128))
     for i in range(int(mnist.train.num_examples / 100)): # 100 = Batch Size
         batch_xs, _ = mnist.train.next_batch(100)
+        noise = np.random.normal(size=(100, 128))
 
         sess.run(train_D, feed_dict={X: batch_xs, Z: noise})
         sess.run(train_G, feed_dict={Z: noise})
