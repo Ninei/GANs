@@ -3,6 +3,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tensorflow.examples.tutorials.mnist import input_data
 import os
+import tensorflow_datasets as tfds
+
+# See all registered datasets
+# tfds.list_builders()
+
+# Load a given dataset by name, along with the DatasetInfo
+# data, info = tfds.load("nsynth", with_info=True)
+# train_data, test_data = data['train'], data['test']
+# assert isinstance(train_data, tf.data.Dataset)
+# assert info.features['label'].num_classes == 10
+# assert info.splits['train'].num_examples == 60000
+
+# # You can also access a builder directly
+# builder = tfds.builder("nsynth")
+# assert builder.info.splits['train'].num_examples == 60000
+# builder.download_and_prepare()
+# datasets = builder.as_dataset()
+
+# If you need NumPy arrays
+# np_datasets = tfds.as_numpy(datasets)
 
 # Output Directory
 OUTPUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), '.output/')
