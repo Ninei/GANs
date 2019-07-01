@@ -17,11 +17,11 @@ GENERATOR_SCOPE = "GAN/Generator"
 DISCRIMINATOR_SCOPE = "GAN/Discriminator"
 
 
-y, sr = librosa.load(ROOT_DATA_PATH+"Loop_0.wav")
-librosa.feature.chroma_stft(y=y, sr=sr)
+data, samplerate = librosa.load(ROOT_DATA_PATH+"Loop_0.wav", dtype='float32')
+librosa.feature.chroma_stft(y=data, sr=samplerate)
 
-S = np.abs(librosa.stft(y, n_fft=4096))**2
-chroma = librosa.feature.chroma_stft(S=S, sr=sr)
+S = np.abs(librosa.stft(data, n_fft=4096))**2
+chroma = librosa.feature.chroma_stft(S=S, sr=samplerate)
 print(chroma)
 
 plt.figure(figsize=(10, 4))
