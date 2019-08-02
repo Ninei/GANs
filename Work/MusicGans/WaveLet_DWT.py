@@ -3,10 +3,8 @@ import pywt
 import matplotlib.pyplot as plt
 import numpy as np
 import librosa
-import scipy
-
-from scipy import signal
-from scipy.io import wavfile
+import scipy.io as sio
+import scipy.io.wavfile
 
 def checkPath(target) :
     if not os.path.exists(target): os.makedirs(target)
@@ -30,9 +28,9 @@ if not os.path.exists(transFile):
     
 #### Load
 # Return the sample rate (in samples/sec), data from a WAV file, Wave Format PCM
-fs, samples_murmur = wavfile.read(transFile)
+fs, samples_murmur = sio.wavfile.read(transFile)
 print("Wave Info\n  Sample Rate={0}, ".format(fs)) # 22.050kHz, 1초당 추출되는 샘플개수
-print("  Numpy array length={0}, data={1}".format(len(samples_murmur), samples_murmur))
+print("  Data Length={0}\n  Data={1}".format(len(samples_murmur), samples_murmur))
 
 ### Discrete Wavelet Info
 # pywt.Wavelet: Describes properties of a discrete wavelet identified by the specified wavelet name, must be a valid wavelet name from the pywt.wavelist() list.
@@ -53,9 +51,8 @@ cA3, cD3, cD2, cD1 = tree
 print("< Discrete Wavelet Transform >\n" + "  cD1: {0}\n  cD2: {1}\n  cD3: {2}\n  cA3: {3}\n".format(cD1,cD2,cD3,cA3))
 
 #### Reconstruct
-# pywt.waverec: Multilevel 1D Inverse Discrete Wavelet Transform.
-rec_sample = pywt.waverec(tree, 'db2')
-# pywt.idwt: Single level Inverse Discrete Wavelet Transform.
+reconstruct_sample = pywt.waverec(tree, 'db2')
+sio.wavfile.write(ROOT_FIGURE_PATH+fileName+fileExt, fs, reconstruct_sample)
 rec_to_orig = pywt.idwt(None, cD1, 'db2', 'smooth')
 rec_to_level1 = pywt.idwt(None, cD2, 'db2', 'smooth')
 rec_to_level2_from_detail = pywt.idwt(None, cD3, 'db2', 'smooth')
@@ -70,33 +67,39 @@ rec_to_level2_from_approx = pywt.idwt(cA3, None, 'db2', 'smooth')
 # plt.show()
 
 plt.figure(figsize=(15,10))
-plt.subplot(5,1,1)
+plt.subplot(6,1,1)
 plt.title('Sample')
 plt.plot(np.linspace(0.0, len(samples_murmur),len(samples_murmur)), samples_murmur)
 plt.xlim(xmin=0)
 plt.grid()
 
-plt.subplot(5,1,2)
+plt.subplot(6,1,2)
 plt.title('cD1')
 plt.plot(np.linspace(0.0, len(rec_to_orig),len(rec_to_orig)), rec_to_orig)
 plt.xlim(xmin=0)
 plt.grid()
 
-plt.subplot(5,1,3)
+plt.subplot(6,1,3)
 plt.title('cD2')
 plt.plot(np.linspace(0.0, len(rec_to_level1),len(rec_to_level1)), rec_to_level1)
 plt.xlim(xmin=0)
 plt.grid()
 
-plt.subplot(5,1,4)
+plt.subplot(6,1,4)
 plt.title('cD3')
 plt.plot(np.linspace(0.0, len(rec_to_level2_from_detail),len(rec_to_level2_from_detail)), rec_to_level2_from_detail)
 plt.xlim(xmin=0)
 plt.grid()
 
-plt.subplot(5,1,5)
+plt.subplot(6,1,5)
 plt.title('cA3')
 plt.plot(np.linspace(0.0, len(rec_to_level2_from_approx),len(rec_to_level2_from_approx)), rec_to_level2_from_approx)
+plt.xlim(xmin=0)
+plt.grid()
+
+plt.subplot(6,1,6)
+plt.title('reconstruct_sample')
+plt.plot(np.linspace(0.0, len(reconstruct_sample),len(reconstruct_sample)), reconstruct_sample)
 plt.xlim(xmin=0)
 plt.grid()
 

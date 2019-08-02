@@ -21,6 +21,13 @@ checkPath(ROOT_OUT_PATH)
 checkPath(ROOT_INPUT_PATH)
 checkPath(ROOT_FIGURE_PATH)
 
+
+# Wave 사운드 파일로 부터 데이터 추출
+# 추출된 데이터로 이산웨이블릿트랜스폼 적용(레벨3)
+# tree(cA, cD3, cD2, cD1) 추출
+# 랜덤변수 데이터 생성(레벨3, sD1, sD2, sD3)하여 학습 >> cD1, cD2, cD3와 유사하도록
+# 학습된 sD1, sD2, sD3 신경망을 통해 나온 결과를 reconstruct_sample = pywt.waverec(tree, 'db2')하여 하나의 
+
 y1 = np.random.randn(2000,1)
 y2 = np.random.randn(2000,1)
 yy = np.append(y1, y2, axis=1)
