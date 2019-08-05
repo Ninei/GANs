@@ -46,12 +46,13 @@ targetData = samples_murmur.copy() # NO read only
 # pywt.wavedec: Multilevel 1D Discrete Wavelet Transform of data. 
 # Parameters: data, wavelet, mode='symmetric', level=None, axis=-1
 # Returns: [cA_n, cD_n, cD_n-1, …, cD2, cD1] : list
-tree = pywt.wavedec(data=targetData, wavelet='db2', level=3)
-cA3, cD3, cD2, cD1 = tree
+originalMatrix = pywt.wavedec(data=targetData, wavelet='db2', level=3) # 레벨에 따라 모가 좋아 지는것인지, 차이점은 몬지
+cA3, cD3, cD2, cD1 = originalMatrix # 의미하는 바를 알아야 한다.
 print("< Discrete Wavelet Transform >\n" + "  cD1: {0}\n  cD2: {1}\n  cD3: {2}\n  cA3: {3}\n".format(cD1,cD2,cD3,cA3))
+# 작가들의 음악이 아닌, 자연의 소리를 시뮬레이션 해보면 어떨까???
 
 #### Reconstruct
-reconstruct_sample = pywt.waverec(tree, 'db2')
+reconstruct_sample = pywt.waverec(originalMatrix, 'db2')
 print("< Reconstruct >\n" + "  Length={0}\n  Data={1}".format(len(reconstruct_sample), reconstruct_sample))
 sio.wavfile.write(ROOT_FIGURE_PATH+fileName+fileExt, fs, reconstruct_sample)
 rec_to_orig = pywt.idwt(None, cD1, 'db2', 'smooth')
@@ -71,37 +72,31 @@ plt.figure(figsize=(15,10))
 plt.subplot(6,1,1)
 plt.title('Sample')
 plt.plot(np.linspace(0.0, len(samples_murmur),len(samples_murmur)), samples_murmur)
-plt.xlim(xmin=0)
 plt.grid()
 
 plt.subplot(6,1,2)
 plt.title('cD1')
 plt.plot(np.linspace(0.0, len(rec_to_orig),len(rec_to_orig)), rec_to_orig)
-plt.xlim(xmin=0)
 plt.grid()
 
 plt.subplot(6,1,3)
 plt.title('cD2')
 plt.plot(np.linspace(0.0, len(rec_to_level1),len(rec_to_level1)), rec_to_level1)
-plt.xlim(xmin=0)
 plt.grid()
 
 plt.subplot(6,1,4)
 plt.title('cD3')
 plt.plot(np.linspace(0.0, len(rec_to_level2_from_detail),len(rec_to_level2_from_detail)), rec_to_level2_from_detail)
-plt.xlim(xmin=0)
 plt.grid()
 
 plt.subplot(6,1,5)
 plt.title('cA3')
 plt.plot(np.linspace(0.0, len(rec_to_level2_from_approx),len(rec_to_level2_from_approx)), rec_to_level2_from_approx)
-plt.xlim(xmin=0)
 plt.grid()
 
 plt.subplot(6,1,6)
 plt.title('reconstruct_sample')
 plt.plot(np.linspace(0.0, len(reconstruct_sample),len(reconstruct_sample)), reconstruct_sample)
-plt.xlim(xmin=0)
 plt.grid()
 
 plt.tight_layout()
