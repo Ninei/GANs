@@ -46,10 +46,9 @@ targetData = samples_murmur.copy() # NO read only
 # pywt.wavedec: Multilevel 1D Discrete Wavelet Transform of data. 
 # Parameters: data, wavelet, mode='symmetric', level=None, axis=-1
 # Returns: [cA_n, cD_n, cD_n-1, …, cD2, cD1] : list
-originalMatrix = pywt.wavedec(data=targetData, wavelet='db2', level=3) # 레벨에 따라 모가 좋아 지는것인지, 차이점은 몬지
-cA3, cD3, cD2, cD1 = originalMatrix # 의미하는 바를 알아야 한다.
+originalMatrix = pywt.wavedec(data=targetData, wavelet='db2', level=3)
+cA3, cD3, cD2, cD1 = originalMatrix
 print("< Discrete Wavelet Transform >\n" + "  cD1: {0}\n  cD2: {1}\n  cD3: {2}\n  cA3: {3}\n".format(cD1,cD2,cD3,cA3))
-# 작가들의 음악이 아닌, 자연의 소리를 시뮬레이션 해보면 어떨까???
 
 #### Reconstruct
 reconstruct_sample = pywt.waverec(originalMatrix, 'db2')
