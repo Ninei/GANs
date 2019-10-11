@@ -12,7 +12,7 @@ def checkPath(target) :
 #### Check Dataset & Output Directory
 ROOT_INPUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), '.dataset/')
 ROOT_OUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), '.output/')
-ROOT_FIGURE_PATH = ROOT_OUT_PATH+".figureList/dwt/"
+ROOT_FIGURE_PATH = ROOT_OUT_PATH+".WaveLetDWT/"
 fileName = "Loop_0"
 fileExt = ".wav"
 inputFile = ROOT_INPUT_PATH+fileName+  fileExt
@@ -49,6 +49,7 @@ targetData = samples_murmur.copy() # NO read only
 originalMatrix = pywt.wavedec(data=targetData, wavelet='db2', level=3)
 cA3, cD3, cD2, cD1 = originalMatrix
 print("< Discrete Wavelet Transform >\n" + "  cD1: {0}\n  cD2: {1}\n  cD3: {2}\n  cA3: {3}\n".format(cD1,cD2,cD3,cA3))
+print(cA3.size, cD3.size, cD2.size, cD1.size);
 
 #### Reconstruct
 reconstruct_sample = pywt.waverec(originalMatrix, 'db2')
