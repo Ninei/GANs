@@ -19,7 +19,7 @@ print("< Discrete Wavelet Transform >\n" + "  cD1: {0}\n  cD2: {1}\n  cD3: {2}\n
 
 def createFakeData(source):
     print(str(source.max()) +","+str(source.min()))
-    return ((source.max()-source.min())*np.random.random(source.size))-(source.min()*-1)
+    return (source.max()-source.min())*np.random.random(source.size)-(source.min()*-1)
 
 # Fake Data
 # fake_cD1 = (np.random.random(cD1.size)-0.5)*2 # [n x 1], -1.0 ~ +1.0
@@ -130,8 +130,9 @@ for i in range(10001):
     if i%10 == 0:
         f.write("%d,\t\t%f,\t\t%f\n"%(i, loss_discriminator, loss_generator))
 
+    stepBreaker = 1000
     # Trace Figure
-    if i%100 == 0:
+    if i%stepBreaker == 0:
         generatorSummary = sess.run(generator_network, feed_dict={noise_sample_placeholder: noise_batch})
         # realPos = plt.scatter(real_pos[:,0], real_pos[:,1])
         # generatorPos = plt.scatter(generatorSummary[:,0],generatorSummary[:,1])
@@ -143,7 +144,7 @@ for i in range(10001):
         gene_cD1 = np.array(generatorSummary[:,3])
         
         trainList = [gene_cA3, gene_cD3, gene_cD2, gene_cD1]
-        ts.traceFigure(targetList=trainList, targetRate=samplingRate, index=(i/100), targetWavelet='db2', realData=realData)
+        ts.traceFigure(targetList=trainList, targetRate=samplingRate, index=(i/stepBreaker), targetWavelet='db2', realData=realData)
 
 f.close()
 
