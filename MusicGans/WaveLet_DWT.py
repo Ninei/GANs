@@ -52,7 +52,8 @@ print("< Discrete Wavelet Transform >\n" + "  cD1: {0}\n  cD2: {1}\n  cD3: {2}\n
 print(cA3.size, cD3.size, cD2.size, cD1.size);
 
 #### Reconstruct
-reconstruct_sample = pywt.waverec(originalMatrix, 'db2')
+reconstructMatrix = [cA3, cD3, cD2, cD1];
+reconstruct_sample = pywt.waverec(reconstructMatrix, 'db2')
 print("< Reconstruct >\n" + "  Length={0}\n  Data={1}".format(len(reconstruct_sample), reconstruct_sample))
 sio.wavfile.write(ROOT_FIGURE_PATH+fileName+fileExt, fs, reconstruct_sample)
 rec_to_orig = pywt.idwt(None, cD1, 'db2', 'smooth')

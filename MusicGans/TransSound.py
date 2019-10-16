@@ -5,7 +5,6 @@ import pywt
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 class TransSound:
     
     def __init__(self):
@@ -25,8 +24,12 @@ class TransSound:
     def getSourceFile(self):
         return transFile
 
-    def getOutputFile(self):
-        return outputFile
+    def getOutputPath(self): return ROOT_OUT_PATH
+
+    def getOutputFile(self, i):
+        outfile = ROOT_OUT_PATH + outputFileName + "_" + str(i) + fileExt
+        print(outfile)
+        return outfile
 
     def getMaxLevel(self, target, targeWavelet):
         discrete_wavelet = pywt.Wavelet(targeWavelet)
@@ -40,11 +43,18 @@ class TransSound:
         sampleList = pywt.wavedec(data=targetData, wavelet=targeWavelet, level=targetLevel)
         return sampleRate, sampleList, targetData
     
-    def traceFigure(self, targetList, targetRate, targetFile, targetWavelet):
-        sampleList = pywt.waverec(targetList, 'db2')
+    def traceFile(self, targetList, targetRate, targetFile, targetWavelet):
+        sampleList = pywt.waverec(targetList, targetWavelet)
         sio.wavfile.write(targetFile, targetRate, sampleList)
 
-        cA3, cD3, cD2, cD1 = targetList
+    def traceFigure(self, targetList, targetRate, index, targetWavelet, realData):
+        soundFile = ROOT_OUT_PATH + outputFileName + "_" + str(index) + fileExt;
+        imgFile =  ROOT_OUT_PATH + outputFileName + "_" + str(index) + ".png"
+        self.traceFile(targetList, targetRate, soundFile, targetWavelet)
+        fs, traceData = sio.wavfile.read(soundFile)
+        traceMatrix = pywt.wavedec(data=traceData.copy(), wavelet=targetWavelet, level=3)
+        cA3, cD3, cD2, cD1 = traceMatrix
+
         rec_to_orig = pywt.idwt(None, cD1, targetWavelet, 'smooth')
         rec_to_level1 = pywt.idwt(None, cD2, targetWavelet, 'smooth')
         rec_to_level2_from_detail = pywt.idwt(None, cD3, targetWavelet, 'smooth')
@@ -52,8 +62,8 @@ class TransSound:
 
         plt.figure(figsize=(15,10))
         plt.subplot(6,1,1)
-        plt.title('Create Sample')
-        plt.plot(np.linspace(0.0, len(sampleList),len(sampleList)), sampleList)
+        plt.title('Real Sample')
+        plt.plot(np.linspace(0.0, len(realData),len(realData)), realData)
         plt.grid()
 
         plt.subplot(6,1,2)
@@ -76,8 +86,14 @@ class TransSound:
         plt.plot(np.linspace(0.0, len(rec_to_level2_from_approx),len(rec_to_level2_from_approx)), rec_to_level2_from_approx)
         plt.grid()
 
+        plt.subplot(6,1,6)
+        plt.title('Fake Sample')
+        plt.plot(np.linspace(0.0, len(traceData),len(traceData)), traceData)
+        plt.grid()
+
         plt.tight_layout()
-        plt.show()
+        plt.savefig(imgFile)
+        # plt.show()
         plt.close()
 
 
@@ -88,4 +104,4 @@ outputFileName =  "randomSound"
 fileExt = ".wav"
 inputFile = ROOT_INPUT_PATH + inputFileName + fileExt
 transFile = ROOT_INPUT_PATH + inputFileName + "_32" + fileExt
-outputFile = ROOT_OUT_PATH + outputFileName +fileExt
+outputFile = ROOT_OUT_PATH + outputFileName + fileExt
