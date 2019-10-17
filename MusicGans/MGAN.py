@@ -26,15 +26,14 @@ def createFakeData(source):
 # fake_cD2 = (np.random.random(cD2.size)-0.5)*2
 # fake_cD3 = (np.random.random(cD3.size)-0.5)*2
 # fake_cA3 = (np.random.random(cA3.size)-0.5)*2
-# fake_cD1 = cD1
-# fake_cD2 = cD2
-# fake_cD3 = cD3
-# fake_cA3 = cA3
-fake_cD1 = createFakeData(cD1);
-fake_cD2 = createFakeData(cD2);
-fake_cD3 = createFakeData(cD3);
-fake_cA3 = createFakeData(cA3);
-# 5 * np.random.random_sample((3, 2)) - 5 >> [-5 ~ 0]
+fake_cD1 = cD1
+fake_cD2 = cD2
+fake_cD3 = cD3
+fake_cA3 = cA3
+# fake_cD1 = createFakeData(cD1);
+# fake_cD2 = createFakeData(cD2);
+# fake_cD3 = createFakeData(cD3);
+# fake_cA3 = createFakeData(cA3);
 
 def createMatrix(dA3, dD3, dD2, dD1):
     data = []
