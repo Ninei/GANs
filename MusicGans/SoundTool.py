@@ -5,7 +5,7 @@ import pywt
 import matplotlib.pyplot as plt
 import numpy as np
 
-class TransSound:
+class SoundTool:
     
     def __init__(self):
         self.checkPath(ROOT_INPUT_PATH)
@@ -98,9 +98,9 @@ class TransSound:
 
 
 ROOT_INPUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), 'dataset/')
-ROOT_OUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), 'output/createGAN/')
-inputFileName = "Loop_0"
-outputFileName =  "randomSound"
+ROOT_OUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), 'output/')
+inputFileName = "Source_0"
+outputFileName =  "Generator_"
 fileExt = ".wav"
 inputFile = ROOT_INPUT_PATH + inputFileName + fileExt
 transFile = ROOT_INPUT_PATH + inputFileName + "_32" + fileExt

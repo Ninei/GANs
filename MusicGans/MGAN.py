@@ -6,34 +6,32 @@ import scipy.io.wavfile
 import librosa
 import pywt
 import tensorflow as tf
-from TransSound import *
+from SoundTool import *
 
-ts = TransSound()
+st = SoundTool()
 
 #### DWT(Discrete Wavelet Transform) Samapling
-samplingRate=22050 # 22.050kHz
-samplingRate, realList, realData = ts.getSource(targetFile=ts.getSourceFile(), targeWavelet='db2', targetLevel=3);
+samplingRate, realList, realData = st.getSource(targetFile=st.getSourceFile(), targeWavelet='db2', targetLevel=3);
 cA3, cD3, cD2, cD1 = realList
 print("< Discrete Wavelet Transform >\n" + "  cD1: {0}\n  cD2: {1}\n  cD3: {2}\n  cA3: {3}\n".format(cD1,cD2,cD3,cA3))
-
+#############################################
 
 def createFakeData(source):
-    print(str(source.max()) +","+str(source.min()))
-    return (source.max()-source.min())*np.random.random(source.size)-(source.min()*-1)
+    return np.float32((source.max()-source.min())*np.random.random(source.size)-(source.min()*-1))
 
 # Fake Data
 # fake_cD1 = (np.random.random(cD1.size)-0.5)*2 # [n x 1], -1.0 ~ +1.0
 # fake_cD2 = (np.random.random(cD2.size)-0.5)*2
 # fake_cD3 = (np.random.random(cD3.size)-0.5)*2
 # fake_cA3 = (np.random.random(cA3.size)-0.5)*2
-fake_cD1 = cD1
-fake_cD2 = cD2
-fake_cD3 = cD3
-fake_cA3 = cA3
-# fake_cD1 = createFakeData(cD1);
-# fake_cD2 = createFakeData(cD2);
-# fake_cD3 = createFakeData(cD3);
-# fake_cA3 = createFakeData(cA3);
+# fake_cD1 = cD1
+# fake_cD2 = cD2
+# fake_cD3 = cD3
+# fake_cA3 = cA3
+fake_cD1 = createFakeData(cD1);
+fake_cD2 = createFakeData(cD2);
+fake_cD3 = createFakeData(cD3);
+fake_cA3 = createFakeData(cA3);
 
 def createMatrix(dA3, dD3, dD2, dD1):
     data = []
@@ -44,10 +42,22 @@ def createMatrix(dA3, dD3, dD2, dD1):
         if i < dD2.size: tD2 = dD2[i]
         tD1 = dD1[i]
         data.append([tA3, tD3, tD2, tD1])
-    return np.array(data, dtype=dD1.dtype)
+    return np.array(data, dtype='float32')
+
+np.float32
 
 GENERATOR_SCOPE = "GAN/Generator"
 DISCRIMINATOR_SCOPE = "GAN/Discriminator"
+
+def saveGeneratorResult(sample, idx):
+    generatorSummary = sample
+    gene_cA3 = np.array(generatorSummary[:,0])[0:cA3.size]
+    gene_cD3 = np.array(generatorSummary[:,1])[0:cD3.size]
+    gene_cD2 = np.array(generatorSummary[:,2])[0:cD2.size]
+    gene_cD1 = np.array(generatorSummary[:,3])
+    
+    trainList = [gene_cA3, gene_cD3, gene_cD2, gene_cD1]
+    st.traceFigure(targetList=trainList, targetRate=samplingRate, index=idx, targetWavelet='db2', realData=realData)
 
 ### Creates a fully connected neural network of 2 hidden layers
 def createGeneratorNetowk(noise_placeholder, hsize=[16, 16], reuse=False): # Z: [none, 2]
@@ -109,13 +119,15 @@ steps_discriminator = 10
 steps_generator = 6
 
 ### Write LossLog File
-f = open(ts.getOutputPath()+'loss_logs.csv','w')
+f = open(st.getOutputPath()+'loss_logs.csv','w')
 f.write('Iteration,Discriminator Loss,Generator Loss\n')
+
+saveGeneratorResult(createMatrix(cA3,cD3,cD2,cD1), "original")
+saveGeneratorResult(createMatrix(fake_cA3,fake_cD3,fake_cD2,fake_cD1), "fake_init")
 
 for i in range(10001):
     real_batch = createMatrix(cA3,cD3,cD2,cD1)
     noise_batch = createMatrix(fake_cA3,fake_cD3,fake_cD2,fake_cD1)
-    # noise_batch = np.random.rand(4, cD1.size)
 
     for _ in range(steps_discriminator):
         _, loss_discriminator = sess.run([optimizer_discriminator, cost_discriminator], feed_dict={real_samples_placeholder: real_batch, noise_sample_placeholder: noise_batch})
@@ -129,23 +141,12 @@ for i in range(10001):
     if i%10 == 0:
         f.write("%d,\t\t%f,\t\t%f\n"%(i, loss_discriminator, loss_generator))
 
-    stepBreaker = 1000
     # Trace Figure
-    if i%stepBreaker == 0:
+    trainCheckMark = 1000
+    if i%trainCheckMark == 0:
         generatorSummary = sess.run(generator_network, feed_dict={noise_sample_placeholder: noise_batch})
         # realPos = plt.scatter(real_pos[:,0], real_pos[:,1])
         # generatorPos = plt.scatter(generatorSummary[:,0],generatorSummary[:,1])
-        print(np.array(generatorSummary[:,1]).dtype);
-        print(fake_cA3.dtype)
-        gene_cA3 = np.array(generatorSummary[:,0])[0:cA3.size]
-        gene_cD3 = np.array(generatorSummary[:,1])[0:cD3.size]
-        gene_cD2 = np.array(generatorSummary[:,2])[0:cD2.size]
-        gene_cD1 = np.array(generatorSummary[:,3])
-        
-        trainList = [gene_cA3, gene_cD3, gene_cD2, gene_cD1]
-        ts.traceFigure(targetList=trainList, targetRate=samplingRate, index=(i/stepBreaker), targetWavelet='db2', realData=realData)
+        saveGeneratorResult(generatorSummary, i/trainCheckMark)
 
 f.close()
-
-
-
