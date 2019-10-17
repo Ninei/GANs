@@ -114,9 +114,6 @@ dmypy.json
 .pyre/
 
 # bin, dataset
-dataset/
-output/
 runs/
 .dataset
 .output
-requirements.txt

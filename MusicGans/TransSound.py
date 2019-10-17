@@ -97,8 +97,8 @@ class TransSound:
         plt.close()
 
 
-ROOT_INPUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), '.dataset/')
-ROOT_OUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), '.output/.createGAN/')
+ROOT_INPUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), 'dataset/')
+ROOT_OUT_PATH = os.path.join(os.path.abspath(__file__+ "../../"), 'output/createGAN/')
 inputFileName = "Loop_0"
 outputFileName =  "randomSound"
 fileExt = ".wav"
