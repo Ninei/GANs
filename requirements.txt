@@ -47,7 +47,7 @@ mock==3.0.5
 mxnet==1.4.1
 nbconvert==5.5.0
 nbformat==4.4.0
-notebook==5.7.8
+notebook==6.1.5
 numba==0.44.1
 numpy==1.14.6
 pandocfilters==1.4.2
